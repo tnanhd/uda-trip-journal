@@ -33,7 +33,7 @@ class UnimplementedJournalService: JournalService {
     }
     
     func logOut() {
-        fatalError("Unimplemented logOut")
+        self.token = nil
     }
     
     func logIn(username: String, password: String) async throws -> Token {
