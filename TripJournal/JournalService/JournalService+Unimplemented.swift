@@ -10,8 +10,26 @@ class UnimplementedJournalService: JournalService {
             .eraseToAnyPublisher()
     }
 
-    func register(username _: String, password _: String) async throws -> Token {
-        fatalError("Unimplemented register")
+    func register(username: String, password: String) async throws -> Token {
+        guard let url = URL(string: "http://localhost:8000/register") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let credentials = Credentials(username: username, password: password)
+        request.httpBody = try? JSONEncoder().encode(credentials)
+        
+        let responseData = try await performRequest(with: request)
+        if let token = try? JSONDecoder().decode(Token.self, from: responseData) {
+            print("Register succesful")
+            self.token = token
+            return token
+        } else {
+            throw CustomError.message(message: "Failed to decode token")
+        }
     }
     
     func logOut() {
@@ -33,8 +51,8 @@ class UnimplementedJournalService: JournalService {
         }.joined(separator: "&")
         request.httpBody = formBody.data(using: .utf8)
         
-        let data = try await performRequest(with: request)
-        if let token = try? JSONDecoder().decode(Token.self, from: data) {
+        let responseData = try await performRequest(with: request)
+        if let token = try? JSONDecoder().decode(Token.self, from: responseData) {
             print("Login succesful")
             self.token = token
             return token
@@ -90,12 +108,16 @@ class UnimplementedJournalService: JournalService {
             throw CustomError.networkError
         }
         
-        if ([401, 403].contains(httpResponse.statusCode)) {
+        /* Client error */
+        if ((400...499).contains(httpResponse.statusCode)) {
+            print("Client erorr")
             let message = try? JSONDecoder().decode(ErrorResponse.self, from: data)
             throw CustomError.invalidInput(detail: message?.detail)
         }
         
+        /* Internal server error */
         if ((500...599).contains(httpResponse.statusCode)) {
+            print("Internal server error")
             throw CustomError.serverError(code: httpResponse.statusCode)
         }
 
