@@ -2,9 +2,14 @@ import Foundation
 import MapKit
 
 /// Represents  a token that is returns when the user authenticates.
-struct Token {
+struct Token: Decodable {
     let accessToken: String
     let tokenType: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case accessToken = "access_token"
+        case tokenType = "token_type"
+    }
 }
 
 /// Represents a trip.

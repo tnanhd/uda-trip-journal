@@ -38,3 +38,8 @@ struct EventUpdate {
     var location: Location?
     var transitionFromPrevious: String?
 }
+
+struct Credentials: Encodable {
+    let username: String
+    let password: String
+}
