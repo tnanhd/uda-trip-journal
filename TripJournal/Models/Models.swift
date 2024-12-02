@@ -51,7 +51,7 @@ struct Event: Identifiable, Sendable, Hashable, Decodable {
 }
 
 /// Represents a location.
-struct Location: Sendable, Hashable, Decodable {
+struct Location: Sendable, Hashable, Codable {
     var latitude: Double
     var longitude: Double
     var address: String?

@@ -33,13 +33,22 @@ struct MediaCreate {
 }
 
 /// An object that can be used to create a new event.
-struct EventCreate {
+struct EventCreate: Encodable {
     let tripId: Trip.ID
     let name: String
     let note: String?
     let date: Date
     let location: Location?
     let transitionFromPrevious: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case tripId = "trip_id"
+        case name
+        case note
+        case date
+        case location
+        case transitionFromPrevious = "transition_from_previous"
+    }
 }
 
 /// An object that can be used to update an existing event.

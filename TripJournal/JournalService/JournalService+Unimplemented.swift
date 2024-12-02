@@ -158,8 +158,26 @@ class UnimplementedJournalService: JournalService {
         let _ = try await performRequest(with: request)
     }
     
-    func createEvent(with _: EventCreate) async throws -> Event {
-        fatalError("Unimplemented createEvent")
+    func createEvent(with event: EventCreate) async throws -> Event {
+        guard let url = URL(string: "http://localhost:8000/events") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.httpBody = try? JSONEncoder().encode(event)
+        
+        let responseData = try await performRequest(with: request)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        if let event = try? decoder.decode(Event.self, from: responseData) {
+            return event
+        } else {
+            throw CustomError.message(message: "Failed to decode trips")
+        }
     }
     
     func updateEvent(withId _: Event.ID, and _: EventUpdate) async throws -> Event {
