@@ -27,9 +27,14 @@ struct TripUpdate: Encodable {
 }
 
 /// An object that can be used to create a media.
-struct MediaCreate {
+struct MediaCreate: Encodable {
     let eventId: Event.ID
     let base64Data: Data
+    
+    private enum CodingKeys: String, CodingKey {
+        case eventId = "event_id"
+        case base64Data = "base64_data"
+    }
 }
 
 /// An object that can be used to create a new event.

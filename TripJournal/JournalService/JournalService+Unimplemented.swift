@@ -197,12 +197,37 @@ class UnimplementedJournalService: JournalService {
         let _ = try await performRequest(with: request)
     }
     
-    func createMedia(with _: MediaCreate) async throws -> Media {
-        fatalError("Unimplemented createMedia")
+    func createMedia(with media: MediaCreate) async throws -> Media {
+        guard let url = URL(string: "http://localhost:8000/media") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.httpBody = try? JSONEncoder().encode(media)
+        
+        let responseData = try await performRequest(with: request)
+        if let media = try? JSONDecoder().decode(Media.self, from: responseData) {
+            return media
+        } else {
+            throw CustomError.message(message: "Failed to decode trips")
+        }
     }
     
-    func deleteMedia(withId _: Media.ID) async throws {
-        fatalError("Unimplemented deleteMedia")
+    func deleteMedia(withId id: Media.ID) async throws {
+        guard let url = URL(string: "http://localhost:8000/media/\(id)") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("*/*", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        
+        let _ = try await performRequest(with: request)
     }
     
     private func performRequest(with request: URLRequest) async throws -> Data {
