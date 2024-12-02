@@ -57,12 +57,20 @@ struct EventCreate: Encodable {
 }
 
 /// An object that can be used to update an existing event.
-struct EventUpdate {
+struct EventUpdate: Encodable {
     var name: String
     var note: String?
     var date: Date
     var location: Location?
     var transitionFromPrevious: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case note
+        case date
+        case location
+        case transitionFromPrevious = "transition_from_previous"
+    }
 }
 
 struct Credentials: Encodable {

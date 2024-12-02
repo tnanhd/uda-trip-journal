@@ -79,7 +79,7 @@ class UnimplementedJournalService: JournalService {
         if let trip = try? decoder.decode(Trip.self, from: responseData) {
             return trip
         } else {
-            throw CustomError.message(message: "Failed to decode trips")
+            throw CustomError.message(message: "Failed to decode trip")
         }
     }
     
@@ -119,7 +119,7 @@ class UnimplementedJournalService: JournalService {
         if let trip = try? decoder.decode(Trip.self, from: responseData) {
             return trip
         } else {
-            throw CustomError.message(message: "Failed to decode trips")
+            throw CustomError.message(message: "Failed to decode trip")
         }
     }
     
@@ -141,7 +141,7 @@ class UnimplementedJournalService: JournalService {
         if let trip = try? decoder.decode(Trip.self, from: responseData) {
             return trip
         } else {
-            throw CustomError.message(message: "Failed to decode trips")
+            throw CustomError.message(message: "Failed to decode trip")
         }
     }
     
@@ -176,12 +176,30 @@ class UnimplementedJournalService: JournalService {
         if let event = try? decoder.decode(Event.self, from: responseData) {
             return event
         } else {
-            throw CustomError.message(message: "Failed to decode trips")
+            throw CustomError.message(message: "Failed to decode event")
         }
     }
     
-    func updateEvent(withId _: Event.ID, and _: EventUpdate) async throws -> Event {
-        fatalError("Unimplemented updateEvent")
+    func updateEvent(withId id: Event.ID, and event: EventUpdate) async throws -> Event {
+        guard let url = URL(string: "http://localhost:8000/events/\(id)") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.httpBody = try? JSONEncoder().encode(event)
+        
+        let responseData = try await performRequest(with: request)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        if let event = try? decoder.decode(Event.self, from: responseData) {
+            return event
+        } else {
+            throw CustomError.message(message: "Failed to decode event")
+        }
     }
     
     func deleteEvent(withId id: Event.ID) async throws {
@@ -213,7 +231,7 @@ class UnimplementedJournalService: JournalService {
         if let media = try? JSONDecoder().decode(Media.self, from: responseData) {
             return media
         } else {
-            throw CustomError.message(message: "Failed to decode trips")
+            throw CustomError.message(message: "Failed to decode media")
         }
     }
     
