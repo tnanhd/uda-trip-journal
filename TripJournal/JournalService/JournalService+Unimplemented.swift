@@ -73,7 +73,7 @@ class UnimplementedJournalService: JournalService {
         request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
         request.httpBody = try? JSONEncoder().encode(trip)
         
-        try await performRequest(with: request)
+        let _ = try await performRequest(with: request)
         return Trip(from: trip)
     }
     
@@ -97,16 +97,41 @@ class UnimplementedJournalService: JournalService {
         }
     }
     
-    func getTrip(withId _: Trip.ID) async throws -> Trip {
-        fatalError("Unimplemented getTrip")
+    func getTrip(withId id: Trip.ID) async throws -> Trip {
+        guard let url = URL(string: "http://localhost:8000/trips/\(id)") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        
+        let responseData = try await performRequest(with: request)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        if let trip = try? decoder.decode(Trip.self, from: responseData) {
+            return trip
+        } else {
+            throw CustomError.message(message: "Failed to decode trips")
+        }
     }
     
     func updateTrip(withId _: Trip.ID, and _: TripUpdate) async throws -> Trip {
         fatalError("Unimplemented updateTrip")
     }
     
-    func deleteTrip(withId _: Trip.ID) async throws {
-        fatalError("Unimplemented deleteTrip")
+    func deleteTrip(withId id: Trip.ID) async throws {
+        guard let url = URL(string: "http://localhost:8000/trips/\(id)") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("*/*", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        
+        let _ = try await performRequest(with: request)
     }
     
     func createEvent(with _: EventCreate) async throws -> Event {
