@@ -32,6 +32,7 @@
 		07F6695D2B589A1E002F8D18 /* AddButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07F6695C2B589A1E002F8D18 /* AddButton.swift */; };
 		368BAFBF2CF986E400F14F06 /* CustomError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368BAFBE2CF986DD00F14F06 /* CustomError.swift */; };
 		368BAFC12CFB189C00F14F06 /* AuthError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368BAFC02CFB188800F14F06 /* AuthError.swift */; };
+		368BAFC32CFDEFE900F14F06 /* JournalService+Live.swift in Sources */ = {isa = PBXBuildFile; fileRef = 368BAFC22CFDEFE900F14F06 /* JournalService+Live.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,7 @@
 		07F6695C2B589A1E002F8D18 /* AddButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddButton.swift; sourceTree = "<group>"; };
 		368BAFBE2CF986DD00F14F06 /* CustomError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomError.swift; sourceTree = "<group>"; };
 		368BAFC02CFB188800F14F06 /* AuthError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthError.swift; sourceTree = "<group>"; };
+		368BAFC22CFDEFE900F14F06 /* JournalService+Live.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JournalService+Live.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +166,7 @@
 				07BCBA8A2B5D65D200C6F687 /* JournalService+Environment.swift */,
 				07BCBA862B5D656E00C6F687 /* JournalService+Mock.swift */,
 				07BCBA882B5D65AD00C6F687 /* JournalService+Unimplemented.swift */,
+				368BAFC22CFDEFE900F14F06 /* JournalService+Live.swift */,
 			);
 			path = JournalService;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				075A90F12B4469C0009A1DCB /* RootView.swift in Sources */,
 				075A90F72B446A5C009A1DCB /* TripForm.swift in Sources */,
 				07BCBA872B5D656E00C6F687 /* JournalService+Mock.swift in Sources */,
+				368BAFC32CFDEFE900F14F06 /* JournalService+Live.swift in Sources */,
 				0767E7102B573F6300993870 /* LocationSearchView.swift in Sources */,
 				075A90FB2B446A80009A1DCB /* EventCell.swift in Sources */,
 				07BCBA8F2B5D7EC500C6F687 /* MediaCarousel.swift in Sources */,
