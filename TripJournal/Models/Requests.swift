@@ -7,17 +7,23 @@ struct TripCreate: Encodable {
     let endDate: Date
     
     private enum CodingKeys: String, CodingKey {
-        case name = "name"
+        case name
         case startDate = "start_date"
         case endDate = "end_date"
     }
 }
 
 /// An object that can be used to update an existing trip.
-struct TripUpdate {
+struct TripUpdate: Encodable {
     let name: String
     let startDate: Date
     let endDate: Date
+    
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case startDate = "start_date"
+        case endDate = "end_date"
+    }
 }
 
 /// An object that can be used to create a media.

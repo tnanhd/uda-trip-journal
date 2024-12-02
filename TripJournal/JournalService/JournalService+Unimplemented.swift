@@ -73,8 +73,14 @@ class UnimplementedJournalService: JournalService {
         request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
         request.httpBody = try? JSONEncoder().encode(trip)
         
-        let _ = try await performRequest(with: request)
-        return Trip(from: trip)
+        let responseData = try await performRequest(with: request)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        if let trip = try? decoder.decode(Trip.self, from: responseData) {
+            return trip
+        } else {
+            throw CustomError.message(message: "Failed to decode trips")
+        }
     }
     
     func getTrips() async throws -> [Trip] {
@@ -117,8 +123,26 @@ class UnimplementedJournalService: JournalService {
         }
     }
     
-    func updateTrip(withId _: Trip.ID, and _: TripUpdate) async throws -> Trip {
-        fatalError("Unimplemented updateTrip")
+    func updateTrip(withId id: Trip.ID, and trip: TripUpdate) async throws -> Trip {
+        guard let url = URL(string: "http://localhost:8000/trips/\(id)") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.httpBody = try? JSONEncoder().encode(trip)
+        
+        let responseData = try await performRequest(with: request)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        if let trip = try? decoder.decode(Trip.self, from: responseData) {
+            return trip
+        } else {
+            throw CustomError.message(message: "Failed to decode trips")
+        }
     }
     
     func deleteTrip(withId id: Trip.ID) async throws {
