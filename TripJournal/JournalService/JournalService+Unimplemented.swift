@@ -184,8 +184,17 @@ class UnimplementedJournalService: JournalService {
         fatalError("Unimplemented updateEvent")
     }
     
-    func deleteEvent(withId _: Event.ID) async throws {
-        fatalError("Unimplemented deleteEvent")
+    func deleteEvent(withId id: Event.ID) async throws {
+        guard let url = URL(string: "http://localhost:8000/events/\(id)") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("*/*", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        
+        let _ = try await performRequest(with: request)
     }
     
     func createMedia(with _: MediaCreate) async throws -> Media {
