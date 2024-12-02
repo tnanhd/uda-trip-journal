@@ -61,8 +61,20 @@ class UnimplementedJournalService: JournalService {
         }
     }
     
-    func createTrip(with _: TripCreate) async throws -> Trip {
-        fatalError("Unimplemented createTrip")
+    func createTrip(with trip: TripCreate) async throws -> Trip {
+        guard let url = URL(string: "http://localhost:8000/trips") else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "accept")
+        request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
+        request.httpBody = try? JSONEncoder().encode(trip)
+        
+        try await performRequest(with: request)
+        return Trip(from: trip)
     }
     
     func getTrips() async throws -> [Trip] {
@@ -76,7 +88,9 @@ class UnimplementedJournalService: JournalService {
         request.setValue("Bearer \(token?.accessToken ?? "")", forHTTPHeaderField: "Authorization")
         
         let responseData = try await performRequest(with: request)
-        if let trips = try? JSONDecoder().decode([Trip].self, from: responseData) {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        if let trips = try? decoder.decode([Trip].self, from: responseData) {
             return trips
         } else {
             throw CustomError.message(message: "Failed to decode trips")
@@ -124,7 +138,7 @@ class UnimplementedJournalService: JournalService {
         
         /* Client error */
         if ((400...499).contains(httpResponse.statusCode)) {
-            print("Client erorr")
+            print("Client error")
             let message = try? JSONDecoder().decode(ErrorResponse.self, from: data)
             throw CustomError.invalidInput(detail: message?.detail)
         }
